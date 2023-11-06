@@ -1,0 +1,12 @@
+.entire{
+    display: grid;
+    grid-template-columns: repeat(20,25px);
+    width: 500px;
+    height: 500px;
+    border: 3px solid;
+}
+.mine{
+    width:25px;
+    height:25px;
+    padding:0;
+}
