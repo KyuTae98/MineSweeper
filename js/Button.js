@@ -1,4 +1,20 @@
 const entire = document.querySelector(".entire");
+const BfsArr = [
+  [0, 1],
+  [1, 0],
+  [0, -1],
+  [-1, 0],
+  [1, 1],
+  [-1, 1],
+  [1, -1],
+  [-1, -1],
+];
+
+const checkRange = (iX, iY) => {
+  if (iX >= 0 && iX < 20 && iY >= 0 && iY < 20) return true;
+  return false;
+};
+
 let score = 0;
 let block = 0;
 const buttonLeftClick = (event) => {
@@ -34,15 +50,11 @@ const buttonRigthClick = (event) => {
 
 const checkMine = (x, y) => {
   let count = 0;
-  if (x - 1 >= 0 && mine[x - 1][y].value === "mine") count++;
-  if (y - 1 >= 0 && mine[x][y - 1].value === "mine") count++;
-  if (x + 1 < 20 && mine[x + 1][y].value === "mine") count++;
-  if (y + 1 < 20 && mine[x][y + 1].value === "mine") count++;
-
-  if (x - 1 >= 0 && y - 1 >= 0 && mine[x - 1][y - 1].value === "mine") count++;
-  if (x + 1 < 20 && y - 1 >= 0 && mine[x + 1][y - 1].value === "mine") count++;
-  if (x + 1 < 20 && y + 1 < 20 && mine[x + 1][y + 1].value === "mine") count++;
-  if (x - 1 >= 0 && y + 1 < 20 && mine[x - 1][y + 1].value === "mine") count++;
+  BfsArr.forEach((ele) => {
+    const iX = x + ele[0],
+      iY = y + ele[1];
+    if (checkRange(iX, iY) && mine[iX][iY].value === "mine") count++;
+  });
   return count;
 };
 
@@ -55,81 +67,18 @@ const checkBFS = (x, y) => {
     while (bfs.length > 0) {
       let [cur_x, cur_y] = bfs.pop();
       mine[cur_x][cur_y].innerText = 0;
-      if (
-        cur_x + 1 < 20 &&
-        mine[cur_x + 1][cur_y].innerText === "" &&
-        checkMine(cur_x + 1, cur_y) === 0
-      )
-        bfs.push([cur_x + 1, cur_y]);
-      else if (cur_x + 1 < 20)
-        mine[cur_x + 1][cur_y].innerText = checkMine(cur_x + 1, cur_y);
 
-      if (
-        cur_y + 1 < 20 &&
-        mine[cur_x][cur_y + 1].innerText === "" &&
-        checkMine(cur_x, cur_y + 1) === 0
-      )
-        bfs.push([cur_x, cur_y + 1]);
-      else if (cur_y + 1 < 20)
-        mine[cur_x][cur_y + 1].innerText = checkMine(cur_x, cur_y + 1);
-
-      if (
-        cur_x - 1 > -1 &&
-        mine[cur_x - 1][cur_y].innerText === "" &&
-        checkMine(cur_x - 1, cur_y) === 0
-      )
-        bfs.push([cur_x - 1, cur_y]);
-      else if (cur_x - 1 > -1)
-        mine[cur_x - 1][cur_y].innerText = checkMine(cur_x - 1, cur_y);
-
-      if (
-        cur_y - 1 > -1 &&
-        mine[cur_x][cur_y - 1].innerText === "" &&
-        checkMine(cur_x, cur_y - 1) === 0
-      )
-        bfs.push([cur_x, cur_y - 1]);
-      else if (cur_y - 1 > -1)
-        mine[cur_x][cur_y - 1].innerText = checkMine(cur_x, cur_y - 1);
-
-      if (
-        cur_y - 1 > -1 &&
-        cur_x - 1 > -1 &&
-        mine[cur_x - 1][cur_y - 1].innerText === "" &&
-        checkMine(cur_x - 1, cur_y - 1) === 0
-      )
-        bfs.push([cur_x - 1, cur_y - 1]);
-      else if (cur_y - 1 > -1 && cur_x - 1 > -1)
-        mine[cur_x - 1][cur_y - 1].innerText = checkMine(cur_x - 1, cur_y - 1);
-
-      if (
-        cur_y + 1 < 20 &&
-        cur_x - 1 > -1 &&
-        mine[cur_x - 1][cur_y + 1].innerText === "" &&
-        checkMine(cur_x - 1, cur_y + 1) === 0
-      )
-        bfs.push([cur_x - 1, cur_y + 1]);
-      else if (cur_y + 1 < 20 && cur_x - 1 > -1)
-        mine[cur_x - 1][cur_y + 1].innerText = checkMine(cur_x - 1, cur_y + 1);
-
-      if (
-        cur_x + 1 < 20 &&
-        cur_y - 1 > -1 &&
-        mine[cur_x + 1][cur_y - 1].innerText === "" &&
-        checkMine(cur_x + 1, cur_y - 1) === 0
-      )
-        bfs.push([cur_x + 1, cur_y - 1]);
-      else if (cur_x + 1 < 20 && cur_y - 1 > -1)
-        mine[cur_x + 1][cur_y - 1].innerText = checkMine(cur_x + 1, cur_y - 1);
-
-      if (
-        cur_x + 1 < 20 &&
-        cur_y + 1 < 20 &&
-        mine[cur_x + 1][cur_y + 1].innerText === "" &&
-        checkMine(cur_x + 1, cur_y + 1) === 0
-      )
-        bfs.push([cur_x + 1, cur_y + 1]);
-      else if (cur_x + 1 < 20 && cur_y + 1 < 20)
-        mine[cur_x + 1][cur_y + 1].innerText = checkMine(cur_x + 1, cur_y + 1);
+      BfsArr.forEach((ele) => {
+        const iX = cur_x + ele[0],
+          iY = cur_y + ele[1];
+        if (
+          checkRange(iX, iY) &&
+          mine[iX][iY].innerText === "" &&
+          checkMine(iX, iY) === 0
+        )
+          bfs.push([iX, iY]);
+        else if (checkRange(iX, iY)) mine[iX][iY].innerText = checkMine(iX, iY);
+      });
     }
   }
 };
